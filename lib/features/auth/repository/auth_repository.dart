@@ -8,6 +8,8 @@ import 'package:whatsapp_clone/common/respository/common_firebase_storage_reposi
 import 'package:whatsapp_clone/common/utils/utils.dart';
 import 'package:whatsapp_clone/features/auth/screens/otp_screen.dart';
 import 'package:whatsapp_clone/features/auth/screens/user_information_screen.dart';
+import 'package:whatsapp_clone/models/user_model.dart';
+import 'package:whatsapp_clone/screens/mobile_screen_layout.dart';
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
@@ -22,6 +24,16 @@ class AuthRepository {
     required this.auth,
     required this.firestore,
   });
+
+  Future<UserModel?> getCurrentUserData() async {
+    var userData = await firestore.collection('users').doc(auth.currentUser?.uid).get();
+    UserModel? user;
+    if(userData.data() != null) {
+      user = UserModel.fromMap(userData.data()!);
+    }
+
+    return user;
+  } 
 
   void signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
@@ -74,11 +86,30 @@ class AuthRepository {
           'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80';
 
       if (profilePic != null) {
-        photoUrl = await ref.read(commonFirebaseStorageRepositoryProvider).storeFileToFirebase(
+        photoUrl = await ref
+            .read(commonFirebaseStorageRepositoryProvider)
+            .storeFileToFirebase(
               'profilePic/$uid',
               profilePic,
             );
       }
+
+      var user = UserModel(
+        name: name,
+        uid: uid,
+        profilePic: photoUrl,
+        isOnline: true,
+        phoneNumber: auth.currentUser!.uid,
+        groupId: [],
+      );
+
+      await firestore.collection('users').doc(uid).set(user.toMap());
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MobileScreenLayout()),
+        (route) => false,
+      );
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
     }
