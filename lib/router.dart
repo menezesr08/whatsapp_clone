@@ -4,6 +4,7 @@ import 'package:whatsapp_clone/common/widgets/error.dart';
 import 'package:whatsapp_clone/features/auth/screens/login_screen.dart';
 import 'package:whatsapp_clone/features/auth/screens/otp_screen.dart';
 import 'package:whatsapp_clone/features/auth/screens/user_information_screen.dart';
+import 'package:whatsapp_clone/features/select_contacts/screens/select_contacts_screen.dart';
 
 Route<dynamic> generateRoutes(RouteSettings settings) {
   switch (settings.name) {
@@ -21,6 +22,10 @@ Route<dynamic> generateRoutes(RouteSettings settings) {
     case UserInformationScreen.routeName:
       return MaterialPageRoute(
         builder: (context) => UserInformationScreen(),
+      );
+    case SelectContactsScreen.routeName:
+      return MaterialPageRoute(
+        builder: (context) => SelectContactsScreen(),
       );
     default:
       return MaterialPageRoute(
