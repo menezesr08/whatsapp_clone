@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:whatsapp_clone/features/chat/controller/chat_controller.dart';
 
 import '../../../colors.dart';
 
-class BottomChatField extends StatefulWidget {
+class BottomChatField extends ConsumerStatefulWidget {
   const BottomChatField({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<BottomChatField> createState() => _BottomChatFieldState();
+  ConsumerState<BottomChatField> createState() => _BottomChatFieldState();
 }
 
-class _BottomChatFieldState extends State<BottomChatField> {
+class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   bool isShowSendButton = false;
+
+  void sendTextMessage() async {
+    if(isShowSendButton) {
+      ref.read(chatControllerProvvider);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Row(
