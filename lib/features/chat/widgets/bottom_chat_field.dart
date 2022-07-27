@@ -5,7 +5,9 @@ import 'package:whatsapp_clone/features/chat/controller/chat_controller.dart';
 import '../../../colors.dart';
 
 class BottomChatField extends ConsumerStatefulWidget {
+  final String recieverUserId;
   const BottomChatField({
+    required this.recieverUserId,
     Key? key,
   }) : super(key: key);
 
@@ -15,18 +17,33 @@ class BottomChatField extends ConsumerStatefulWidget {
 
 class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   bool isShowSendButton = false;
-
+  final TextEditingController _messageController = TextEditingController();
   void sendTextMessage() async {
-    if(isShowSendButton) {
-      ref.read(chatControllerProvvider);
+    if (isShowSendButton) {
+      ref.read(chatControllerProvider).sendTextMessage(
+            context,
+            _messageController.text.trim(),
+            widget.recieverUserId,
+          );
+      setState(() {
+        _messageController.text = '';
+      });
     }
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _messageController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: TextFormField(
+            controller: _messageController,
             onChanged: ((value) {
               if (value.isNotEmpty) {
                 setState(() {
@@ -108,9 +125,12 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
           child: CircleAvatar(
             radius: 25,
             backgroundColor: const Color(0xFF128C7E),
-            child: Icon(
-              isShowSendButton ? Icons.send : Icons.mic,
-              color: Colors.white,
+            child: GestureDetector(
+              onTap: sendTextMessage,
+              child: Icon(
+                isShowSendButton ? Icons.send : Icons.mic,
+                color: Colors.white,
+              ),
             ),
           ),
         )
