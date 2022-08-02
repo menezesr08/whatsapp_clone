@@ -23,6 +23,8 @@ class BottomChatField extends ConsumerStatefulWidget {
 class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   bool isShowSendButton = false;
   final TextEditingController _messageController = TextEditingController();
+  bool isShowEmojiContainer = false;
+  FocusNode focusNode = FocusNode();
   void sendTextMessage() async {
     if (isShowSendButton) {
       ref.read(chatControllerProvider).sendTextMessage(
@@ -52,10 +54,44 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
     }
   }
 
-    void selectVideo() async {
+  void selectVideo() async {
     File? video = await pickVideoFromGallery(context);
     if (video != null) {
       sendFileMessage(video, MessageEnum.video);
+    }
+  }
+
+  void selectGIF() async {
+    final gif = await pickGIF(context);
+    if (gif != null) {
+      ref
+          .read(chatControllerProvider)
+          .sendGIFMessage(context, gif.url, widget.recieverUserId);
+    }
+  }
+
+  void hideEmojiContainer() {
+    setState(() {
+      isShowEmojiContainer = false;
+    });
+  }
+
+  void showEmojiContainer() {
+    setState(() {
+      isShowEmojiContainer = true;
+    });
+  }
+
+  void showKeyboard() => focusNode.requestFocus();
+  void hideKeyboard() => focusNode.unfocus();
+
+  void toggleEmojiKeyboardContainer() {
+    if (isShowEmojiContainer) {
+      showKeyboard();
+      hideEmojiContainer();
+    } else {
+      hideKeyboard();
+      showEmojiContainer();
     }
   }
 
@@ -73,6 +109,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
           children: [
             Expanded(
               child: TextFormField(
+                focusNode: focusNode,
                 controller: _messageController,
                 onChanged: ((value) {
                   if (value.isNotEmpty) {
@@ -95,14 +132,14 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
                       child: Row(
                         children: [
                           IconButton(
-                            onPressed: () {},
+                            onPressed: toggleEmojiKeyboardContainer,
                             icon: Icon(
                               Icons.emoji_emotions,
                               color: Colors.grey,
                             ),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: selectGIF,
                             icon: Icon(
                               Icons.gif,
                               color: Colors.grey,
@@ -166,12 +203,25 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
             )
           ],
         ),
-        SizedBox(height: 310, child: EmojiPicker(
-          onEmojiSelected: (category, emoji) {
-            
-          },
-        ),),
-        
+        isShowEmojiContainer
+            ? SizedBox(
+                height: 310,
+                child: EmojiPicker(
+                  onEmojiSelected: (category, emoji) {
+                    setState(() {
+                      _messageController.text =
+                          _messageController.text + emoji.emoji;
+                    });
+
+                    if (!isShowSendButton) {
+                      setState(() {
+                        isShowSendButton = true;
+                      });
+                    }
+                  },
+                ),
+              )
+            : const SizedBox(),
       ],
     );
   }

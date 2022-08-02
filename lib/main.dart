@@ -11,7 +11,7 @@ import 'package:whatsapp_clone/screens/mobile_screen_layout.dart';
 
 import 'firebase_options.dart';
 
-// 5:25
+// 5:54
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
