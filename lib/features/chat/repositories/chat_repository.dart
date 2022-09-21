@@ -34,6 +34,7 @@ class ChatRepository {
     required UserModel senderUser,
     required MessageReply? messageReply,
   }) async {
+    print("sending text messageeeeeeeeee");
     try {
       var timeSent = DateTime.now();
       UserModel recieverUserData;
@@ -318,27 +319,25 @@ class ChatRepository {
     String messageId,
   ) async {
     try {
-        await firestore
-        .collection('users')
-        .doc(auth.currentUser!.uid)
-        .collection('chats')
-        .doc(recieverUserId)
-        .collection('messages')
-        .doc(messageId)
-        .update({
-          'isSeen' : true
-        });
+      await firestore
+          .collection('users')
+          .doc(auth.currentUser!.uid)
+          .collection('chats')
+          .doc(recieverUserId)
+          .collection('messages')
+          .doc(messageId)
+          .update({'isSeen': true});
 
-    await firestore
-        .collection('users')
-        .doc(recieverUserId)
-        .collection('chats')
-        .doc(auth.currentUser!.uid)
-        .collection('messages')
-        .doc(messageId)
-        .update({
-          'isSeen': true,
-        });
+      await firestore
+          .collection('users')
+          .doc(recieverUserId)
+          .collection('chats')
+          .doc(auth.currentUser!.uid)
+          .collection('messages')
+          .doc(messageId)
+          .update({
+        'isSeen': true,
+      });
     } catch (e) {
       showSnackBar(context: context, content: e.toString());
     }
