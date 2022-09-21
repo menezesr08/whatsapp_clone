@@ -13,7 +13,10 @@ import 'package:whatsapp_clone/features/chat/widgets/sender_message_card.dart';
 
 class ChatList extends ConsumerStatefulWidget {
   final String recieverUserId;
-  const ChatList({required this.recieverUserId, Key? key}) : super(key: key);
+  final bool isGroupChat;
+  const ChatList(
+      {required this.recieverUserId, required this.isGroupChat, Key? key})
+      : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _ChatListState();
@@ -41,8 +44,13 @@ class _ChatListState extends ConsumerState<ChatList> {
 
   Widget build(BuildContext context) {
     return StreamBuilder<List<Message>>(
-        stream:
-            ref.read(chatControllerProvider).chatStream(widget.recieverUserId),
+        stream: widget.isGroupChat
+            ? ref
+                .read(chatControllerProvider)
+                .groupChatStream(widget.recieverUserId)
+            : ref
+                .read(chatControllerProvider)
+                .chatStream(widget.recieverUserId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Loader();

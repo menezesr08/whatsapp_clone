@@ -16,8 +16,10 @@ import '../../../colors.dart';
 
 class BottomChatField extends ConsumerStatefulWidget {
   final String recieverUserId;
+  final bool isGroupChat;
   const BottomChatField({
     required this.recieverUserId,
+    required this.isGroupChat,
     Key? key,
   }) : super(key: key);
 
@@ -58,6 +60,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
             context,
             _messageController.text.trim(),
             widget.recieverUserId,
+            widget.isGroupChat,
           );
       setState(() {
         _messageController.text = '';
@@ -87,6 +90,7 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
           file,
           widget.recieverUserId,
           messageEnum,
+          widget.isGroupChat,
         );
   }
 
@@ -107,9 +111,12 @@ class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   void selectGIF() async {
     final gif = await pickGIF(context);
     if (gif != null) {
-      ref
-          .read(chatControllerProvider)
-          .sendGIFMessage(context, gif.url, widget.recieverUserId);
+      ref.read(chatControllerProvider).sendGIFMessage(
+            context,
+            gif.url,
+            widget.recieverUserId,
+            widget.isGroupChat,
+          );
     }
   }
 
