@@ -9,6 +9,4 @@ class MessageReply {
   MessageReply(this.message, this.isMe, this.messageEnum);
 }
 
-final messageReplyProvider = StateProvider<MessageReply?>((ref) {
-  
-});
+final messageReplyProvider = StateProvider<MessageReply?>((ref) => null);
